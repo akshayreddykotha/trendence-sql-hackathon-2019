@@ -1,0 +1,28 @@
+Question: 4
+
+studentVle file had 4 combinations of course-batch. 
+
+I wonder if that's what you are looking for.
+
+Your Query here:
+
+
+WITH max_activity AS (
+select course_code,
+	    batch_code, 
+		RANK() OVER(PARTITION BY course_code, batch_code ORDER BY sum_click desc) rank,
+		date, 
+		sum_click
+from studentVle)
+
+select *
+from max_activity
+where rank = 1;
+
+
+
+
+
+
+Explanation (Optional):
+Partitioned the table based on course, batch combination and filtered out the first-ranked click activity date.

@@ -1,0 +1,35 @@
+Question: 7
+3292 rows of id_student
+
+
+
+Your Query here:
+
+
+
+
+
+WITH wtdscore AS (
+select id_student, sum(a.weight*sa.score/100) wtd_prod, sum(a.weight/100) sumofweights, 
+				   (sum(a.weight*sa.score/100)/sum(a.weight/100)) wtd_score
+from studentAssessment sa
+join assessments a
+ON a.id_assessment = sa.id_assessment
+WHERE sa.score is not NULL 
+GROUP BY sa.id_student
+HAVING sum(a.weight) != 0)
+
+select sa.id_student, count(*) tot_num_assess
+from studentAssessment sa
+join wtdscore ws
+on ws.id_student = sa.id_student
+where score = 100
+group by sa.id_student, ws.wtd_score
+having count(*) > 1
+order by tot_num_assess desc, ws.wtd_score desc
+
+Explanation (Optional):
+The first table calculated weighted score across all assessments across different courses. As per the question, all 
+the courses attended by a student id are taken into consideration to calculate the weighted average for that student id.
+The second table uses the first table by join to sort the student ids after sorting them by number of assessments with a 
+score of 100.

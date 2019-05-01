@@ -1,0 +1,29 @@
+Question: 3
+
+It is the 'forumng' activity type.
+
+
+Your Query here:
+
+select v.activity_type, sum(sv.sum_click) num_clicks
+FROM studentInfo si
+JOIN studentVle sv
+ON si.course_code = sv.course_code
+AND si.batch_code = sv.batch_code
+AND si.id_student = sv.id_student
+JOIN vle v
+ON v.id_site = sv.id_site
+WHERE si.final_result = 'Distinction'
+GROUP BY v.activity_type
+ORDER BY 2 desc;
+
+
+
+
+
+
+Explanation (Optional):
+Joined studentInfo tables with studentVle where the clicks are there and vle where the activity type is known. A specific 
+implementation is that the while joining studentVle tables, I considered the same student to be unique by adding 
+course_code, batch_code in the JOIN clause. Though the clicks got reduced because of speicificity, forumng remained the 
+top exercised activity.

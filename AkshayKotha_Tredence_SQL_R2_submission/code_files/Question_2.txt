@@ -1,0 +1,57 @@
+Question: 2
+
+
+
+It is the course_code, batch_code combination = {AAA, 2013J} with the highest pass rate.
+Your Query here:
+
+/*Part 1*/
+WITH reg AS 
+(SELECT course_code, batch_code, COUNT(id_student) num_reg
+FROM studentRegistration
+WHERE date_unregistration IS NULL
+GROUP BY course_code, batch_code),
+
+pass AS 
+(SELECT course_code, batch_code, COUNT(final_result) num_pass
+FROM studentInfo
+WHERE final_result IN ('Distinction', 'Pass')
+GROUP BY course_code, batch_code)
+
+
+SELECT reg.course_code, 
+	   reg.batch_code, 
+	   reg.num_reg, 
+	   pass.num_pass, 
+	   (pass.num_pass*100/reg.num_reg) pass_rate
+FROM reg
+JOIN pass
+ON reg.course_code = pass.course_code
+AND reg.batch_code = pass.batch_code
+GROUP BY reg.course_code, reg.batch_code, reg.num_reg, pass.num_pass
+ORDER BY 5 DESC;
+
+
+
+/* Part 2 - Percentage of each activity type hosted within the course AAA, 2013J */
+
+SELECT activity_type, cast(cast(count(*)*100 AS decimal(10,2))/
+						   cast((SELECT count(*)
+                                 from vle
+                                 WHERE course_code = 'AAA' AND batch_code = '2013J') 
+								 AS numeric(10,2)) 
+							AS numeric(10,2)) perc_activity 
+from vle 
+WHERE course_code = 'AAA' AND batch_code = '2013J'
+GROUP BY activity_type;
+
+
+
+
+
+Explanation (Optional):
+1. Two different tables, one for counting only registered students and the other for counting either 'Distinction' or 'Pass' 
+students were joined as the pass percentage/rate was calculated. A combination of course_code and batch_code is considered 
+unique. The course with the highest pass rate was [course_code, batch_code] = [AAA, 2013J
+2. The activity split using the vle table in the course AAA, 2013J
+
